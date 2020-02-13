@@ -7,6 +7,9 @@
 <h4>Spring websocket jwt for client android here:</h4>
    https://github.com/uav-project-com/android-stomp-websocket-client
 
+<b>If this project help you reduce time to develop, you can give me a cup of coffee :)</b><br/>
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://github.com/uav-project-com/android-stomp-websocket-client/blob/master/donate.txt)
+
 # Stack
 
 ![](https://img.shields.io/badge/java_8-✓-blue.svg)
