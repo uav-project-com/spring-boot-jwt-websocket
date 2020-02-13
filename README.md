@@ -2,6 +2,11 @@
 
 ![](https://img.shields.io/badge/build-success-brightgreen.svg)
 
+## Stomp Websocket
+<h3 align="center">For websocket support, please checkout branch webscoket :blush:</h3>
+<h4>Spring websocket jwt for client android here:</h4>
+   https://github.com/uav-project-com/android-stomp-websocket-client
+
 # Stack
 
 ![](https://img.shields.io/badge/java_8-✓-blue.svg)
@@ -9,6 +14,7 @@
 ![](https://img.shields.io/badge/mysql-✓-blue.svg)
 ![](https://img.shields.io/badge/jwt-✓-blue.svg)
 ![](https://img.shields.io/badge/swagger_2-✓-blue.svg)
+![](https://img.shields.io/badge/Dash-websocket-green)
 
 You can find a related post for this repository [here](https://medium.com/@xoor/jwt-authentication-service-44658409e12c).
 
