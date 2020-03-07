@@ -33,16 +33,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
-        stompEndpointRegistry.addEndpoint("example-endpoint")
+        stompEndpointRegistry.addEndpoint("/example-endpoint")
                 .setAllowedOrigins("*").withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic", "/queue", "/exchange");
-//        config.enableStompBrokerRelay("/topic", "/queue", "/exchange"); // Uncomment for external message broker (ActiveMQ, RabbitMQ)
-        config.setApplicationDestinationPrefixes("/topic", "/queue");// prefix in client queries
-        config.setUserDestinationPrefix("/user");
+        config.enableSimpleBroker("/topic");
+        //TODO: config.enableStompBrokerRelay("/topic"); // Uncomment for external message broker (ActiveMQ, RabbitMQ)
+        config.setApplicationDestinationPrefixes("/app");// prefix in client queries
+        //TODO: don't know: config.setUserDestinationPrefix("/user");
     }
 
     @Override
@@ -65,9 +65,19 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 assert accessor != null;
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     List<String> authorization = accessor.getNativeHeader("authorization");
-                    log.debug("authorization: {}", authorization);
+                    log.error("authorization: {}", authorization);
                     assert authorization != null;
                     jwtTokenProvider.validateToken(authorization.get(0));
+                } else if (StompCommand.SEND.equals(accessor.getCommand())) {
+                    log.error("SEND {}", accessor.getMessage());
+                } else if (StompCommand.RECEIPT.equals(accessor.getCommand())) {
+                    log.error("RECEIVE {}", accessor.getMessage());
+                } else if (StompCommand.MESSAGE.equals(accessor.getCommand())) {
+                    log.error("MESSAGE {}", accessor.getMessage());
+                } else if (accessor.getHeader("simpMessageType").toString().equals("HEARTBEAT")){
+                    // System.err.println("Heart beat");
+                } else {
+                    System.err.println("Unknown accessor");
                 }
                 return message;
             }

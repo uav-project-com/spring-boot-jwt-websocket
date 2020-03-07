@@ -37,6 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers("/h2-console/**/**").permitAll()//
         .antMatchers("/example-endpoint/**").permitAll()
         .antMatchers("/example-endpoint/websocket").permitAll()
+        .antMatchers("/topic/**", "/app/**").permitAll()
 
         // Disallow everything else..
         .anyRequest().authenticated();
