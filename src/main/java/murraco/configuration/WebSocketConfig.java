@@ -39,10 +39,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
+        config.enableSimpleBroker("/topic", "/chat/queue");
         //TODO: config.enableStompBrokerRelay("/topic"); // Uncomment for external message broker (ActiveMQ, RabbitMQ)
         config.setApplicationDestinationPrefixes("/app");// prefix in client queries
-        //TODO: don't know: config.setUserDestinationPrefix("/user");
+        // prefix of user MUST be same as config.enableSimpleBroker() above: "/chat/queue"
+        //      client will subscribe: "/chat/queue/{username}/chat/queue/messages"
+        config.setUserDestinationPrefix("/chat/queue");
     }
 
     @Override
@@ -65,19 +67,26 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 assert accessor != null;
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     List<String> authorization = accessor.getNativeHeader("authorization");
-                    log.error("authorization: {}", authorization);
+                    // token WITHOUT 'Bearer '
+                    log.info("authorization: {}", authorization);
                     assert authorization != null;
                     jwtTokenProvider.validateToken(authorization.get(0));
+                } else if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
+                    log.info("SUBSCRIBE");
                 } else if (StompCommand.SEND.equals(accessor.getCommand())) {
-                    log.error("SEND {}", accessor.getMessage());
+                    log.info("SEND");
                 } else if (StompCommand.RECEIPT.equals(accessor.getCommand())) {
-                    log.error("RECEIVE {}", accessor.getMessage());
+                    log.info("RECEIPT");
                 } else if (StompCommand.MESSAGE.equals(accessor.getCommand())) {
-                    log.error("MESSAGE {}", accessor.getMessage());
-                } else if (accessor.getHeader("simpMessageType").toString().equals("HEARTBEAT")){
-                    // System.err.println("Heart beat");
+                    log.info("MESSAGE");
                 } else {
-                    System.err.println("Unknown accessor");
+                    Object type = accessor.getHeader("simpMessageType");
+                    if (null != type && type.toString().equals("HEARTBEAT")) {
+                        // DO NOTHING
+                    } else {
+                        log.error("UNKNOWN, msg type:  {}", accessor.getHeader("simpMessageType"));
+                    }
+
                 }
                 return message;
             }

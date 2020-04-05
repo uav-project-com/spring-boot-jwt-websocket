@@ -1,43 +1,63 @@
 package murraco.controller;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import murraco.model.Command;
 import murraco.model.EchoModel;
 import murraco.service.SocketService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Created by Naik on 23.02.17.
  */
+@Controller
+@RequiredArgsConstructor
+@Slf4j
 public class SocketController {
-    private static final Logger log = LoggerFactory.getLogger(SocketController.class);
 
+    /**
+     * Gửi mes qua socket từ android đến '/hello-msg-mapping' và gửi response trả lại android: /topic/greetings
+     * Android: subscribed /topic/greetings
+     * @param message mess from client
+     * @return response to target
+     */
     @MessageMapping("/hello-msg-mapping")
     @SendTo("/topic/greetings")
     public EchoModel echoMessageMapping(String message) {
-        log.debug("React to hello-msg-mapping");
+        log.info("React to hello-msg-mapping");
         return new EchoModel("Server answer: " + message.trim());
     }
 
-    @RequestMapping(value = "/hello-convert-and-send", method = RequestMethod.POST)
+    /**
+     * Send message to special user
+     * @param message stomp websocket message
+     * @param chatMessage content of payload
+     */
+    @MessageMapping("/commander")
+    public void sendingMessage(Message<Object> message, @Payload Command chatMessage) {
+        String authenSender = chatMessage.getFromUser();
+        log.info("COMMAND: {}", chatMessage);
+        chatMessage.setFromUser(authenSender);
+        String recipient = chatMessage.getToUser();
+        if (authenSender.equals(recipient)) {
+            // send to themself
+            socketService.forwardCommand(authenSender, chatMessage);
+        }
+        socketService.forwardCommand(recipient, chatMessage);
+    }
+
+    @PostMapping(value = "/hello-convert-and-send")
     public void echoConvertAndSend(@RequestParam("msg") String message) {
-        log.error("Message received: {}", message);
+        log.warn("Message received: {}", message);
         socketService.echoMessage(message);
     }
 
-    public SocketService getSocketService() {
-        return socketService;
-    }
 
-    public void setSocketService(SocketService socketService) {
-        this.socketService = socketService;
-    }
-
-    @Autowired
-    private SocketService socketService;
+    private final SocketService socketService;
 }

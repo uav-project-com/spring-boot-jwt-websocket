@@ -10,7 +10,7 @@ public class WebSocketSecurityConfig
 
     protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
         messages
-                .simpDestMatchers("/example-endpoint/**", "/topic/**", "/app/**").permitAll()
+                .simpDestMatchers("/example-endpoint/**", "/topic/**", "/app/**", "/chat/**").permitAll()
         .anyMessage().permitAll();
     }
 
