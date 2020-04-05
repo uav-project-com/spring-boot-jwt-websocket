@@ -29,9 +29,10 @@ public class SocketController {
      */
     @MessageMapping("/hello-msg-mapping")
     @SendTo("/topic/greetings")
-    public EchoModel echoMessageMapping(String message) {
+    public Command echoMessageMapping(Command message) {
         log.info("React to hello-msg-mapping");
-        return new EchoModel("Server answer: " + message.trim());
+        message.setData("Server received:" + message.getData());
+        return message;
     }
 
     /**
