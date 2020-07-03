@@ -1,6 +1,7 @@
 package murraco.security;
 
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +37,7 @@ public class JwtTokenProvider {
   private String secretKey;
 
   @Value("${security.jwt.token.expire-length:3600000}")
-  private long validityInMilliseconds = 3600000; // 1h
+  private final int validityInDays = 7; // 7 days
 
   @Autowired
   private MyUserDetails myUserDetails;
@@ -52,12 +53,14 @@ public class JwtTokenProvider {
     claims.put("auth", roles.stream().map(s -> new SimpleGrantedAuthority(s.getAuthority())).filter(Objects::nonNull).collect(Collectors.toList()));
 
     Date now = new Date();
-    Date validity = new Date(now.getTime() + validityInMilliseconds);
+    Calendar c = Calendar.getInstance();
+    c.setTime(now);
+    c.add(Calendar.DATE, validityInDays);
 
     return Jwts.builder()//
         .setClaims(claims)//
         .setIssuedAt(now)//
-        .setExpiration(validity)//
+        .setExpiration(c.getTime())//
         .signWith(SignatureAlgorithm.HS256, secretKey)//
         .compact();
   }
