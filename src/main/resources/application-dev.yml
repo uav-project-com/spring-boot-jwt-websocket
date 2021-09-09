@@ -19,13 +19,13 @@ spring:
           new_generator_mappings: false
 
 server:
-   port: 8443 # This is the default port anyway, but you can change it here
+   port: ${SERVER_PORT}
    ssl:
     enabled: true
-    key-store: src/main/resources/ssl/springboot.p12
-    key-store-password: Canhth0ng
+    key-store: ${SERVER_SSL_KEY-STORE}
+    key-store-password: ${SERVER_SSL_KEY-STORE-PASSWORD}
     key-store-type: PKCS12
-    key-alias: phicongtre.site
+    key-alias: ${SERVER_SSL_KEY-ALIAS}
 
 security:
     jwt:
