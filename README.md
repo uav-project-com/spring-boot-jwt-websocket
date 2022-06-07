@@ -1,5 +1,6 @@
 # Spring Boot JWT
-
+### branch main: chatting 
+#### branch info: control uav via socket command and socket server(this code)
 ![](https://img.shields.io/badge/build-success-brightgreen.svg)
 
 ## Stomp Websocket

@@ -24,6 +24,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
 
+    // Redirect to HTTPS with Spring Security
+    http.requiresChannel().anyRequest().requiresSecure();
+
     // Disable CSRF (cross site request forgery)
     http.csrf().disable();
 
@@ -34,7 +37,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     http.authorizeRequests()//
         .antMatchers("/users/signin").permitAll()//
         .antMatchers("/users/signup").permitAll()//
-        .antMatchers("/h2-console/**/**").permitAll()
+        .antMatchers("/h2-console/**/**").permitAll()//
+        .antMatchers("/example-endpoint/**").permitAll()
+        .antMatchers("/example-endpoint/websocket").permitAll()
+        .antMatchers("/topic/**", "/app/**").permitAll()
+
         // Disallow everything else..
         .anyRequest().authenticated();
 
